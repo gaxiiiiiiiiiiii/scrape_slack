@@ -39,6 +39,22 @@ def crowdworks_data():
         data.append((title, price, url))
     return data
 
+def coconala_data():
+    base = 'https://coconala.com'
+    url = base + '/requests?keyword=%E3%82%B9%E3%82%AF%E3%83%AC%E3%82%A4%E3%83%94%E3%83%B3%E3%82%B0&recruiting=true&page=1'
+    res = requests.get(url, headers=headers)
+    soup = bs(res.text,'html.parser')
+    lists = soup.select('#result_jobs > .search_results > ul > li')
+    ls = soup.select('div.c-searchPage_itemList > div > a')
+    data = []
+    for l in ls:
+        a = l.select_one('div > div > div.c-itemInfo_title > a')
+        title = a.text.replace('\n', '').replace(' ', '')
+        price = l.select_one('div > div > div > div > div > div > div').text.replace('\n', '').replace(' ', '')
+        url = a.get('href')
+        data.append((title,price,url))
+    return data
+
 
 def send_message(jobs):
     webhook = os.environ["SLACK_WEBHOOK_TEST"]
@@ -62,6 +78,7 @@ def read_cache():
 def main():
     data = lancers_data()
     data.extend(crowdworks_data())
+    data.extend(coconala_data())
     cache = read_cache()
     diff = [d for d in data if d not in cache]
     send_message(diff)
