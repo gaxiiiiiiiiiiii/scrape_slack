@@ -8,8 +8,8 @@ headers = {'User-Agent': 'Chrome/89.0.4389.82'}
 
 def lancers_data():
     base = 'https://www.lancers.jp'
-    api = base + '/work/search?open=1&keyword=%E3%82%B9%E3%82%AF%E3%83%AC%E3%82%A4%E3%83%94%E3%83%B3%E3%82%B0'
-    res = requests.get(api, headers=headers)
+    url = base + '/work/search?open=1&keyword=%E3%82%B9%E3%82%AF%E3%83%AC%E3%82%A4%E3%83%94%E3%83%B3%E3%82%B0'
+    res = requests.get(url, headers=headers)
     soup = bs(res.text,'html.parser')
     cards = soup.select('div.c-media-list__item.c-media')
     ads = soup.select('div.c-media-list__item.c-media.c-media--clickable') # 求人広告
@@ -23,6 +23,20 @@ def lancers_data():
         # detail = get_detail(url)
         d = (title, price, url)
         data.append(d)
+    return data
+
+def crowdworks_data():
+    base = 'https://crowdworks.jp'
+    url = base + '/public/jobs/search?keep_search_criteria=true&order=score&hide_expired=true&search%5Bkeywords%5D=%E3%82%B9%E3%82%AF%E3%83%AC%E3%82%A4%E3%83%94%E3%83%B3%E3%82%B0'
+    res = requests.get(url, headers=headers)
+    soup = bs(res.text,'html.parser')
+    lists = soup.select('#result_jobs > .search_results > ul > li')
+    data = []
+    for l in lists:
+        title = l.select_one('.item_title').text.replace('\n', '')
+        url = base + l.select_one('.item_title > a').get('href')
+        price = l.select_one('b.amount').text.replace('\n', '')
+        data.append((title, price, url))
     return data
 
 
@@ -47,10 +61,11 @@ def read_cache():
 
 def main():
     data = lancers_data()
+    data.extend(crowdworks_data())
     cache = read_cache()
     data = [d for d in data if d not in cache]
     send_message(data)
-    write_cache(data)    
+    write_cache(data)   
     
     
 if __name__ == '__main__':
