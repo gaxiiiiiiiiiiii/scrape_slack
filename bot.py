@@ -63,8 +63,8 @@ def main():
     data = lancers_data()
     data.extend(crowdworks_data())
     cache = read_cache()
-    data = [d for d in data if d not in cache]
-    send_message(data)
+    diff = [d for d in data if d not in cache]
+    send_message(diff)
     write_cache(data)   
     
     
