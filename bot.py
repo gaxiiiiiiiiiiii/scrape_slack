@@ -17,9 +17,9 @@ def lancers_data():
     data = []
     for card in cards:
         sleep(1)
-        url = base + card.select_one('a[class="c-media__title"]').get('href')
-        title = card.select_one('.c-media__title-inner').text.split('\n')[-2].replace(' ', '')
-        price = card.select_one('.c-media__job-price').text.replace('\n', '').split('/')[0]
+        url = base + card.select_one('a[class="c-media__title"]').get('href').strip()
+        title = card.select_one('.c-media__title-inner').text.split('\n')[-2].strip()
+        price = card.select_one('.c-media__job-price').text.replace('\n', '').split('/')[0].strip()
         # detail = get_detail(url)
         d = (title, price, url)
         data.append(d)
@@ -33,9 +33,9 @@ def crowdworks_data():
     lists = soup.select('#result_jobs > .search_results > ul > li')
     data = []
     for l in lists:
-        title = l.select_one('.item_title').text.replace('\n', '')
-        url = base + l.select_one('.item_title > a').get('href')
-        price = l.select_one('b.amount').text.replace('\n', '').replace(' ', '')
+        title = l.select_one('.item_title').text.replace('\n', '').strip()
+        url = base + l.select_one('.item_title > a').get('href').strip()
+        price = l.select_one('b.amount').text.replace('\n', '').strip()
         data.append((title, price, url))
     return data
 
@@ -49,9 +49,9 @@ def coconala_data():
     data = []
     for l in ls:
         a = l.select_one('div > div > div.c-itemInfo_title > a')
-        title = a.text.replace('\n', '').replace(' ', '')
-        price = l.select_one('div > div > div > div > div > div > div').text.replace('\n', '').replace(' ', '')
-        url = a.get('href')
+        title = a.text.replace('\n', '').strip()
+        price = l.select_one('div > div > div > div > div > div > div').text.replace('\n', '').strip()
+        url = a.get('href').strip()
         data.append((title,price,url))
     return data
 
@@ -79,15 +79,12 @@ def main():
     data = lancers_data()
     data.extend(crowdworks_data())
     data.extend(coconala_data())
-    cache = read_cache()
-    print('------ole cache------')
-    for c in cache:        
-        print(c[0])
+    cache = read_cache()    
     diff = [d for d in data if d not in cache]
+    print('------diff------')
+    for c in diff:        
+        print(c[0])
     send_message(diff)
-    write_cache(data)
-    print('------new cache------')
-    for c in read_cache():
-        print(c[0])    
+    write_cache(data)    
 if __name__ == '__main__':
     main()
