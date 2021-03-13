@@ -35,7 +35,7 @@ def crowdworks_data():
     for l in lists:
         title = l.select_one('.item_title').text.replace('\n', '')
         url = base + l.select_one('.item_title > a').get('href')
-        price = l.select_one('b.amount').text.replace('\n', '')
+        price = l.select_one('b.amount').text.replace('\n', '').replace(' ', '')
         data.append((title, price, url))
     return data
 
@@ -80,10 +80,14 @@ def main():
     data.extend(crowdworks_data())
     data.extend(coconala_data())
     cache = read_cache()
+    print('------ole cache------')
+    for c in cache:        
+        print(c[0])
     diff = [d for d in data if d not in cache]
     send_message(diff)
-    write_cache(data)   
-    
-    
+    write_cache(data)
+    print('------new cache------')
+    for c in read_cache():
+        print(c[0])    
 if __name__ == '__main__':
     main()
