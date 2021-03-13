@@ -74,11 +74,18 @@ def write_cache(data):
 def read_cache():
     with open('cache.pkl', 'rb') as cache:
         return pickle.load(cache)
+    
+def cleansing(data):
+    with open('dummy.pkl', 'wb') as cache:
+        pickle.dump(data , cache)
+    with open('dummy.pkl', 'rb') as cache:
+        return pickle.load(cache)    
 
 def main():
     data = lancers_data()
     data.extend(crowdworks_data())
     data.extend(coconala_data())
+    data = cleansing(data)
     cache = read_cache()    
     diff = [d for d in data if d not in cache]
     print('------diff------')
