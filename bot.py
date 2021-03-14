@@ -13,24 +13,11 @@ def send_message(data):
         title, price, url = d
         data = json % (text % (title, price, url))
         requests.post(webhook, data=data.encode('utf-8'))              
+    
 
-def main():
+    
+if __name__ == '__main__':
     data = get_data()
     diff = mkDiff(data)
     send_message(diff)
     updateCache(data)  
-
-def main():
-    data = lancers_data()
-    data.extend(crowdworks_data())
-    data.extend(coconala_data())
-    data = cleansing(data)
-    cache = read_cache()    
-    diff = [d for d in data if d not in cache]
-    for c in diff:        
-        print(c[0])
-    send_message(diff)
-    write_cache(data)  
-    
-if __name__ == '__main__':
-    main()
