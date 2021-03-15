@@ -15,7 +15,7 @@ class Cache(Base):
     __table_args__={"autoload": True}
     
     
-def mkDiff(data):
+def take_diff(data):
     session = SessionClass()
     cache = session.query(Cache).all()
     session.close()
@@ -24,7 +24,7 @@ def mkDiff(data):
     return diff
 
 
-def updateCache(data):
+def update_cache(data):
     session = SessionClass()
     cache = session.query(Cache).all()
     for c in cache:
